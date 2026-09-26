@@ -5,6 +5,7 @@ import type { ProfileRow } from "@/lib/supabase/types";
 import { ensureProfile } from "@/lib/customer";
 import { getUserOrders } from "@/lib/orders";
 import { getMyReviews } from "@/lib/reviews";
+import { isOwnerEmail } from "@/lib/profile-presets";
 import { ReferralBox } from "@/components/compte/referral-box";
 import { ProfileCustomizer } from "@/components/compte/profile-customizer";
 import { AddressPicker } from "@/components/address/address-picker";
@@ -74,7 +75,7 @@ export default async function ComptePage({
 
       <ReferralBox />
 
-      <ProfileCustomizer profile={profile} googleAvatarUrl={avatarUrl} badges={badges} />
+      <ProfileCustomizer profile={profile} googleAvatarUrl={avatarUrl} badges={badges} isOwner={isOwnerEmail(user.email)} />
 
       <form action={updateProfileAction} className="card space-y-5 p-6 sm:p-8">
         <h2 className="font-display flex items-center gap-2 text-lg font-normal text-espresso">

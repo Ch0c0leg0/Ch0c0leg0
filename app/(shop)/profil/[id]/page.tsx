@@ -37,6 +37,7 @@ export default async function PublicProfilePage({
       <ProfileCard
         profile={found.profile}
         googleAvatarUrl=""
+        isOwner={found.isOwner}
         badges={{
           emailVerified: false,
           orderCount: found.orderCount,

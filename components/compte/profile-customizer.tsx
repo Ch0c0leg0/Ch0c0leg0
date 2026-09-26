@@ -89,10 +89,12 @@ export function ProfileCustomizer({
   profile,
   googleAvatarUrl,
   badges,
+  isOwner = false,
 }: {
   profile: Profile | null;
   googleAvatarUrl: string;
   badges: ProfileBadges;
+  isOwner?: boolean;
 }) {
   const [draft, setDraft] = useState<Draft>({
     displayName: profile?.displayName ?? "",
@@ -116,7 +118,7 @@ export function ProfileCustomizer({
     <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
       {/* Aperçu live */}
       <div className="lg:sticky lg:top-24 lg:self-start">
-        <ProfileCard profile={draft} googleAvatarUrl={googleAvatarUrl} badges={badges} />
+        <ProfileCard profile={draft} googleAvatarUrl={googleAvatarUrl} badges={badges} isOwner={isOwner} />
         <p className="mt-2 text-center text-xs text-cocoa/50">
           Aperçu en direct de ta carte
         </p>
@@ -203,6 +205,30 @@ export function ProfileCustomizer({
               );
             }}
           />
+        </div>
+
+        <div>
+          <label className="label" htmlFor="custom-avatar-url">
+            Ou image perso <span className="font-normal text-cocoa/50">(URL https déjà hébergée)</span>
+          </label>
+          <input
+            id="custom-avatar-url"
+            name="avatarUrl"
+            type="url"
+            inputMode="url"
+            value={draft.avatarUrl.startsWith("https://") ? draft.avatarUrl : ""}
+            onChange={(e) =>
+              setDraft((d) => ({
+                ...d,
+                avatarUrl: e.target.value.trim() || "auto",
+              }))
+            }
+            className="input"
+            placeholder="https://…/mon-avatar.png"
+          />
+          <p className="mt-1 text-[11px] text-cocoa/50">
+            L'upload direct arrivera avec le stockage ; en attendant, colle le lien d'une image en ligne.
+          </p>
         </div>
 
         <div>

@@ -330,6 +330,8 @@ export type PublicProfile = {
   orderCount: number;
   reviewCount: number;
   memberSince: string;
+  /** Propriétaire (calculé côté serveur, e-mail jamais exposé). */
+  isOwner: boolean;
 };
 
 /** Profil affichable par tous : sous-ensemble strict, sans infos persos. */
@@ -339,26 +341,31 @@ export async function getPublicProfile(userId: string): Promise<PublicProfile | 
     const { data, error } = await db()
       .from("profiles")
       .select(
-        "id,display_name,bio,pronouns,status_text,avatar_url,avatar_decoration,profile_frame,banner,accent_color,name_style,nameplate,profile_effect,created_at"
+        "id,display_name,email,bio,pronouns,status_text,avatar_url,avatar_decoration,profile_frame,banner,accent_color,name_style,nameplate,profile_effect,created_at"
       )
       .eq("id", userId)
       .maybeSingle();
     if (error || !data) return null;
     const { getUserOrders } = await import("@/lib/orders");
     const { getMyReviews } = await import("@/lib/reviews");
+    const { isOwnerEmail } = await import("@/lib/profile-presets");
     const [orders, reviews] = await Promise.all([
       getUserOrders(userId).catch(() => []),
       getMyReviews(userId).catch(() => []),
     ]);
-    const profile = mapProfile(data as unknown as ProfileRow);
+    const row = data as unknown as ProfileRow & { email?: unknown };
+    const isOwner = isOwnerEmail(row.email);
+    const { email: _email, ...publicRow } = row;
+    const profile = mapProfile(publicRow);
     return {
-      profile,
+      profile: { ...profile, email: "" },
       orderCount: orders.length,
       reviewCount: reviews.length,
       memberSince: new Date(profile.createdAt ?? Date.now()).toLocaleDateString("fr-FR", {
         month: "long",
         year: "numeric",
       }),
+      isOwner,
     };
   } catch {
     return null;

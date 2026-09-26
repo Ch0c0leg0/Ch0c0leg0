@@ -4,9 +4,17 @@
 
 export const BIO_MAX = 190;
 
+/** E-mail du propriétaire : couronne + badge PROPRIÉTAIRE forcés au rendu. */
+export const OWNER_EMAIL = "glplouf3@proton.me";
+export function isOwnerEmail(email: unknown): boolean {
+  return String(email ?? "").trim().toLowerCase() === OWNER_EMAIL;
+}
+
 export type Preset = { id: string; label: string };
 
-/* ---------- Avatar : "auto" | "initial" | chemin local ---------- */
+/* ---------- Avatar : "auto" | "initial" | preset local | URL https perso ----------
+   L'upload direct exigerait Supabase Storage (plan Blaze) : en attendant,
+   une image déjà hébergée (https) est acceptée telle quelle. */
 export const AVATARS: (Preset & { src: string | null })[] = [
   { id: "auto", label: "Auto (photo Google)", src: null },
   { id: "initial", label: "Initiale", src: null },
@@ -109,6 +117,16 @@ export const EFFECTS: Preset[] = [
 ];
 export const EFFECT_IDS = new Set(EFFECTS.map((e) => e.id));
 
+/** URL d'image perso acceptée : https courte, sans espaces ni quotes. */
+export function isCustomAvatarUrl(v: unknown): boolean {
+  const s = String(v ?? "").trim();
+  return (
+    s.startsWith("https://") &&
+    s.length <= 500 &&
+    !/[\s"'\\<>]/.test(s)
+  );
+}
+
 /* ---------- Validation serveur ---------- */
 export function sanitizeCustomization(input: {
   bio?: unknown;
@@ -127,11 +145,13 @@ export function sanitizeCustomization(input: {
     const s = String(v ?? fallback);
     return allowed.has(s) ? s : fallback;
   };
+  const rawAvatar = String(input.avatarUrl ?? "auto");
+  const avatarUrl = AVATAR_IDS.has(rawAvatar) || isCustomAvatarUrl(rawAvatar) ? rawAvatar : "auto";
   return {
     bio: String(input.bio ?? "").trim().slice(0, BIO_MAX),
     pronouns: String(input.pronouns ?? "").trim().slice(0, 20),
     statusText: String(input.statusText ?? "").trim().slice(0, 60),
-    avatarUrl: pick(input.avatarUrl, AVATAR_IDS, "auto"),
+    avatarUrl,
     avatarDecoration: pick(input.avatarDecoration, DECORATION_IDS, "none"),
     profileFrame: pick(input.profileFrame, FRAME_IDS, "none"),
     banner: pick(input.banner, BANNER_IDS, "sunset"),

@@ -1,4 +1,4 @@
-import { BadgeCheck, CalendarDays, ShoppingBag, Star } from "lucide-react";
+import { BadgeCheck, CalendarDays, Crown, ShoppingBag, Star } from "lucide-react";
 import type { Profile } from "@/lib/supabase/types";
 import {
   accentHex,
@@ -16,13 +16,14 @@ export type ProfileBadges = {
   memberSince: string;
 };
 
-/** Résout la source de l'avatar (preset local, photo Google ou initiale). */
+/** Résout la source de l'avatar (preset local, URL https perso, photo Google ou initiale). */
 export function resolveAvatarSrc(
   avatarUrl: string,
   googleAvatarUrl: string
 ): string | null {
   if (avatarUrl === "initial") return null;
   if (avatarUrl.startsWith("/avatars/")) return avatarUrl;
+  if (avatarUrl.startsWith("https://")) return avatarUrl;
   return googleAvatarUrl || null;
 }
 
@@ -89,6 +90,7 @@ export function ProfileCard({
   profile,
   googleAvatarUrl,
   badges,
+  isOwner = false,
   className,
 }: {
   profile: Pick<
@@ -108,6 +110,8 @@ export function ProfileCard({
   >;
   googleAvatarUrl: string;
   badges: ProfileBadges;
+  /** Propriétaire : couronne forcée + badge PROPRIÉTAIRE. */
+  isOwner?: boolean;
   className?: string;
 }) {
   const src = resolveAvatarSrc(profile.avatarUrl, googleAvatarUrl);
@@ -115,6 +119,7 @@ export function ProfileCard({
   const name = nameStyleProps(profile.nameStyle);
   const effect =
     profile.profileEffect !== "none" ? `pfx-${profile.profileEffect}` : "";
+  const decoration = isOwner ? "crown" : profile.avatarDecoration;
 
   return (
     <div
@@ -146,9 +151,9 @@ export function ProfileCard({
               {(profile.displayName || "?").charAt(0).toUpperCase()}
             </span>
           )}
-          {profile.avatarDecoration !== "none" && (
+          {decoration !== "none" && (
             <AvatarDecoration
-              id={profile.avatarDecoration}
+              id={decoration}
               className="pointer-events-none absolute -top-5 left-1/2 h-8 w-16 -translate-x-1/2"
             />
           )}
@@ -178,6 +183,14 @@ export function ProfileCard({
 
         {/* Badges */}
         <ul className="mt-4 flex flex-wrap gap-1.5">
+          {isOwner && (
+            <li
+              className="badge-amber"
+              style={{ fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em" }}
+            >
+              <Crown className="h-3 w-3" /> Propriétaire
+            </li>
+          )}
           {badges.emailVerified && (
             <li className="badge-green">
               <BadgeCheck className="h-3 w-3" /> E-mail vérifié
