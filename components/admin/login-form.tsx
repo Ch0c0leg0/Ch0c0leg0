@@ -55,7 +55,7 @@ export function LoginForm() {
           required
           autoComplete="username"
           className="input"
-          placeholder="admin"
+          placeholder="vous@exemple.fr"
         />
       </div>
       <div>
@@ -93,10 +93,6 @@ export function LoginForm() {
           </>
         )}
       </button>
-
-      <p className="text-center text-xs text-cocoa/50">
-        Identifiants par défaut : admin / admin123
-      </p>
     </form>
   );
 }
