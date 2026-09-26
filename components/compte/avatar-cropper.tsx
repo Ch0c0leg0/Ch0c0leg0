@@ -9,8 +9,10 @@ import {
 } from "@/lib/profile-presets";
 
 /**
- * Recadrage avatar : glisser-déposer dans le cercle + curseur de zoom.
- * Sert aussi de test d'URL : si l'image ne charge pas, message explicite.
+ * Recadrage avatar : la référence affiche l'image ENTIÈRE (dimensions
+ * originelles), le cercle montre le résultat (cover + transform). On glisse
+ * et zoome sur le cercle ; le rendu de la carte est strictement identique.
+ * Sert aussi de test d'URL : image qui ne charge pas = message explicite.
  */
 export function AvatarCropper({
   src,
@@ -23,7 +25,7 @@ export function AvatarCropper({
   value: AvatarCrop;
   onChange: (crop: AvatarCrop) => void;
 }) {
-  const boxRef = useRef<HTMLDivElement>(null);
+  const circleRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ x: number; y: number; tx: number; ty: number } | null>(null);
   const [broken, setBroken] = useState(false);
 
@@ -38,7 +40,7 @@ export function AvatarCropper({
   }
   function onPointerMove(e: React.PointerEvent) {
     const start = dragRef.current;
-    const box = boxRef.current;
+    const box = circleRef.current;
     if (!start || !box) return;
     const size = box.getBoundingClientRect().width || 1;
     const clamp = (n: number) => Math.min(100, Math.max(-100, n));
@@ -52,39 +54,66 @@ export function AvatarCropper({
     dragRef.current = null;
   }
 
+  const transform = `translate(${value.tx}%, ${value.ty}%) scale(${value.zoom})`;
+
   return (
     <div>
       <input type="hidden" name="avatarCrop" value={formatAvatarCrop(value)} />
-      <div className="flex items-center gap-4">
-        <div
-          ref={boxRef}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerCancel={onPointerUp}
-          className="h-28 w-28 shrink-0 cursor-grab touch-none overflow-hidden rounded-full bg-cream-deep ring-1 ring-espresso/10 active:cursor-grabbing"
-          title={src && !broken ? "Glisse pour recadrer" : undefined}
-        >
-          {src && !broken ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={src}
-              alt=""
-              draggable={false}
-              referrerPolicy="no-referrer"
-              onError={() => setBroken(true)}
-              onDragStart={(e) => e.preventDefault()}
-              className="h-full w-full object-cover"
-              style={{
-                transform: `translate(${value.tx}%, ${value.ty}%) scale(${value.zoom})`,
-              }}
-            />
-          ) : (
-            <span className="flex h-full w-full items-center justify-center font-display text-4xl text-espresso">
-              {(name || "?").charAt(0).toUpperCase()}
-            </span>
-          )}
+      <div className="flex items-start gap-4">
+        {/* Cercle résultat : cover + transform (identique au rendu carte) */}
+        <div className="shrink-0">
+          <div
+            ref={circleRef}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerUp}
+            className="h-28 w-28 cursor-grab touch-none overflow-hidden rounded-full bg-cream-deep ring-1 ring-espresso/10 active:cursor-grabbing"
+            title={src && !broken ? "Glisse pour recadrer" : undefined}
+          >
+            {src && !broken ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={src}
+                alt=""
+                draggable={false}
+                referrerPolicy="no-referrer"
+                onError={() => setBroken(true)}
+                onDragStart={(e) => e.preventDefault()}
+                className="h-full w-full object-cover"
+                style={{ transform }}
+              />
+            ) : (
+              <span className="flex h-full w-full items-center justify-center font-display text-4xl text-espresso">
+                {(name || "?").charAt(0).toUpperCase()}
+              </span>
+            )}
+          </div>
+          <p className="mt-1 text-center text-[11px] font-semibold text-cocoa/60">Rendu</p>
         </div>
+
+        {/* Référence : image entière, dimensions originelles */}
+        <div className="shrink-0">
+          <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-2xl bg-cream-deep ring-1 ring-espresso/10">
+            {src && !broken ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={src}
+                alt=""
+                draggable={false}
+                referrerPolicy="no-referrer"
+                onError={() => setBroken(true)}
+                className="max-h-full max-w-full object-contain"
+              />
+            ) : (
+              <span className="font-display text-4xl text-espresso/40">
+                {(name || "?").charAt(0).toUpperCase()}
+              </span>
+            )}
+          </div>
+          <p className="mt-1 text-center text-[11px] font-semibold text-cocoa/60">Original</p>
+        </div>
+
         <div className="min-w-0 flex-1">
           <label className="label" htmlFor="custom-avatar-zoom">
             Zoom · {Math.round(value.zoom * 100)} %
@@ -120,7 +149,7 @@ export function AvatarCropper({
         </p>
       ) : (
         <p className="mt-2 text-[11px] text-cocoa/50">
-          Glisse l&apos;image dans le cercle pour la recadrer.
+          À gauche l&apos;image entière, dans le cercle le résultat : glisse et zoome.
         </p>
       )}
     </div>
