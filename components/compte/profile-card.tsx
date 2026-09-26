@@ -1,10 +1,12 @@
 import { BadgeCheck, CalendarDays, Crown, ShoppingBag, Star } from "lucide-react";
 import type { Profile } from "@/lib/supabase/types";
+import { AvatarImg } from "@/components/compte/avatar-img";
 import {
   accentHex,
   bannerStyle,
   frameClass,
   nameplateStyle,
+  parseAvatarCrop,
   NAME_STYLES,
 } from "@/lib/profile-presets";
 import { cn } from "@/lib/cn";
@@ -100,6 +102,7 @@ export function ProfileCard({
     | "pronouns"
     | "statusText"
     | "avatarUrl"
+    | "avatarCrop"
     | "avatarDecoration"
     | "profileFrame"
     | "banner"
@@ -117,6 +120,10 @@ export function ProfileCard({
   const src = resolveAvatarSrc(profile.avatarUrl, googleAvatarUrl);
   const accent = accentHex(profile.accentColor);
   const name = nameStyleProps(profile.nameStyle);
+  const crop = parseAvatarCrop(profile.avatarCrop);
+  const cropStyle: React.CSSProperties = {
+    transform: `translate(${crop.tx}%, ${crop.ty}%) scale(${crop.zoom})`,
+  };
   const effect =
     profile.profileEffect !== "none" ? `pfx-${profile.profileEffect}` : "";
   const decoration = isOwner ? "crown" : profile.avatarDecoration;
@@ -138,19 +145,14 @@ export function ProfileCard({
       <div className="px-5 pb-5">
         {/* Avatar chevauchant */}
         <div className="relative -mt-9 mb-3 h-[4.5rem] w-[4.5rem]">
-          {src ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+          <span className="block h-[4.5rem] w-[4.5rem] overflow-hidden rounded-full">
+            <AvatarImg
               src={src}
-              alt=""
-              referrerPolicy="no-referrer"
-              className="h-[4.5rem] w-[4.5rem] rounded-full bg-cream-deep object-cover ring-4 ring-white"
+              name={profile.displayName}
+              imgStyle={cropStyle}
+              className="h-[4.5rem] w-[4.5rem] rounded-full text-4xl ring-4 ring-white"
             />
-          ) : (
-            <span className="flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-full bg-cream-deep font-display text-4xl text-espresso ring-4 ring-white">
-              {(profile.displayName || "?").charAt(0).toUpperCase()}
-            </span>
-          )}
+          </span>
           {decoration !== "none" && (
             <AvatarDecoration
               id={decoration}

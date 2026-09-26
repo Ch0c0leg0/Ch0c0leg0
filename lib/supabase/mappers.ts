@@ -85,6 +85,7 @@ export function mapProfile(row: ProfileRow): Profile {
     pronouns: String(row.pronouns ?? ""),
     statusText: String(row.status_text ?? ""),
     avatarUrl: String(row.avatar_url ?? ""),
+    avatarCrop: String(row.avatar_crop ?? ""),
     avatarDecoration: String(row.avatar_decoration ?? "none"),
     profileFrame: String(row.profile_frame ?? "none"),
     banner: String(row.banner ?? "sunset"),

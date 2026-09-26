@@ -14,9 +14,13 @@ import {
   FRAMES,
   NAMEPLATES,
   NAME_STYLES,
+  formatAvatarCrop,
+  parseAvatarCrop,
   type Preset,
 } from "@/lib/profile-presets";
 import { ProfileCard, resolveAvatarSrc, type ProfileBadges } from "@/components/compte/profile-card";
+import { AvatarCropper } from "@/components/compte/avatar-cropper";
+import { AvatarImg } from "@/components/compte/avatar-img";
 import { cn } from "@/lib/cn";
 
 type Draft = {
@@ -25,6 +29,7 @@ type Draft = {
   pronouns: string;
   statusText: string;
   avatarUrl: string;
+  avatarCrop: string;
   avatarDecoration: string;
   profileFrame: string;
   banner: string;
@@ -102,6 +107,7 @@ export function ProfileCustomizer({
     pronouns: profile?.pronouns ?? "",
     statusText: profile?.statusText ?? "",
     avatarUrl: profile?.avatarUrl || "auto",
+    avatarCrop: profile?.avatarCrop ?? "",
     avatarDecoration: profile?.avatarDecoration || "none",
     profileFrame: profile?.profileFrame || "none",
     banner: profile?.banner || "sunset",
@@ -113,6 +119,12 @@ export function ProfileCustomizer({
   const pick = (name: keyof Draft, id: string) =>
     setDraft((d) => ({ ...d, [name]: id }));
   const autoSrc = resolveAvatarSrc("auto", googleAvatarUrl);
+  const cropSrc =
+    draft.avatarUrl === "auto"
+      ? autoSrc
+      : draft.avatarUrl === "initial"
+        ? null
+        : draft.avatarUrl;
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
@@ -195,15 +207,26 @@ export function ProfileCustomizer({
             onPick={pick}
             render={(a) => {
               const src = a.id === "auto" ? autoSrc : a.src;
-              return src ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={src} alt={a.label} referrerPolicy="no-referrer" className="h-12 w-12 rounded-full bg-cream-deep object-cover" />
-              ) : (
-                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-cream-deep font-display text-xl text-espresso">
-                  {(draft.displayName || "?").charAt(0).toUpperCase()}
-                </span>
+              return (
+                <AvatarImg
+                  src={src}
+                  name={a.id === "initial" ? draft.displayName : a.label}
+                  className="h-12 w-12 rounded-full text-xl"
+                />
               );
             }}
+          />
+        </div>
+
+        <div>
+          <FieldLabel>Recadrer</FieldLabel>
+          <AvatarCropper
+            src={cropSrc}
+            name={draft.displayName}
+            value={parseAvatarCrop(draft.avatarCrop)}
+            onChange={(crop) =>
+              setDraft((d) => ({ ...d, avatarCrop: formatAvatarCrop(crop) }))
+            }
           />
         </div>
 

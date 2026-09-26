@@ -127,12 +127,33 @@ export function isCustomAvatarUrl(v: unknown): boolean {
   );
 }
 
+/** Recadrage avatar : "zoom,tx,ty" (zoom 1–3, tx/ty en % de l'image). */
+export type AvatarCrop = { zoom: number; tx: number; ty: number };
+export const DEFAULT_CROP: AvatarCrop = { zoom: 1, tx: 0, ty: 0 };
+export function parseAvatarCrop(v: unknown): AvatarCrop {
+  const m = /^(\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$/.exec(String(v ?? "").trim());
+  if (!m) return DEFAULT_CROP;
+  const clamp = (n: number, min: number, max: number) =>
+    Math.min(max, Math.max(min, Number.isFinite(n) ? n : min));
+  return {
+    zoom: clamp(Number(m[1]), 1, 3),
+    tx: clamp(Number(m[2]), -100, 100),
+    ty: clamp(Number(m[3]), -100, 100),
+  };
+}
+export function formatAvatarCrop(c: AvatarCrop): string {
+  const r = (n: number) => Math.round(n * 100) / 100;
+  if (c.zoom === 1 && c.tx === 0 && c.ty === 0) return "";
+  return `${r(c.zoom)},${r(c.tx)},${r(c.ty)}`;
+}
+
 /* ---------- Validation serveur ---------- */
 export function sanitizeCustomization(input: {
   bio?: unknown;
   pronouns?: unknown;
   statusText?: unknown;
   avatarUrl?: unknown;
+  avatarCrop?: unknown;
   avatarDecoration?: unknown;
   profileFrame?: unknown;
   banner?: unknown;
@@ -147,11 +168,13 @@ export function sanitizeCustomization(input: {
   };
   const rawAvatar = String(input.avatarUrl ?? "auto");
   const avatarUrl = AVATAR_IDS.has(rawAvatar) || isCustomAvatarUrl(rawAvatar) ? rawAvatar : "auto";
+  const crop = parseAvatarCrop(input.avatarCrop);
   return {
     bio: String(input.bio ?? "").trim().slice(0, BIO_MAX),
     pronouns: String(input.pronouns ?? "").trim().slice(0, 20),
     statusText: String(input.statusText ?? "").trim().slice(0, 60),
     avatarUrl,
+    avatarCrop: formatAvatarCrop(crop),
     avatarDecoration: pick(input.avatarDecoration, DECORATION_IDS, "none"),
     profileFrame: pick(input.profileFrame, FRAME_IDS, "none"),
     banner: pick(input.banner, BANNER_IDS, "sunset"),

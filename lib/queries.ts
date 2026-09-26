@@ -341,7 +341,7 @@ export async function getPublicProfile(userId: string): Promise<PublicProfile | 
     const { data, error } = await db()
       .from("profiles")
       .select(
-        "id,display_name,email,bio,pronouns,status_text,avatar_url,avatar_decoration,profile_frame,banner,accent_color,name_style,nameplate,profile_effect,created_at"
+        "id,display_name,email,bio,pronouns,status_text,avatar_url,avatar_crop,avatar_decoration,profile_frame,banner,accent_color,name_style,nameplate,profile_effect,created_at"
       )
       .eq("id", userId)
       .maybeSingle();

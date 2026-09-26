@@ -32,6 +32,7 @@ export type ProfileRow = {
   pronouns?: string | null;
   status_text?: string | null;
   avatar_url?: string | null;
+  avatar_crop?: string | null;
   avatar_decoration?: string | null;
   profile_frame?: string | null;
   banner?: string | null;
@@ -129,6 +130,7 @@ export type Profile = {
   pronouns: string;
   statusText: string;
   avatarUrl: string;
+  avatarCrop: string;
   avatarDecoration: string;
   profileFrame: string;
   banner: string;
