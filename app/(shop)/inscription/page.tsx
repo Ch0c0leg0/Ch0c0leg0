@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/customer";
 import { SignupForm } from "@/components/compte/signup-form";
 import { SplitTitle } from "@/components/motion/split-title";
 import { GsapReveal } from "@/components/motion/gsap-reveal";
 
 export const metadata: Metadata = { title: "Créer un compte" };
 
-export default function InscriptionPage() {
+export default async function InscriptionPage() {
+  if (await getCurrentUser()) redirect("/compte");
   return (
     <div className="relative overflow-hidden bg-cream-deep">
       <div aria-hidden className="pointer-events-none absolute inset-0">

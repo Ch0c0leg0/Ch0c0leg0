@@ -41,16 +41,32 @@ export async function ensureProfile(): Promise<string | null> {
     .eq("id", user.id)
     .maybeSingle();
   if (!existing) {
+    // Pseudo initial : display_name saisi, sinon nom Google, sinon préfixe e-mail.
+    const googleName = String(
+      user.user_metadata?.full_name ?? user.user_metadata?.name ?? ""
+    ).trim();
     await admin.from("profiles").insert({
       id: user.id,
       email: user.email ?? "",
       display_name:
         String(user.user_metadata?.display_name ?? "").trim() ||
+        googleName ||
         (user.email ?? "").split("@")[0],
     });
   }
   void touchPresence(user.id).catch(() => {});
   return user.id;
+}
+
+/** Utilisateur connecté ou null (ne redirige jamais). */
+export async function getCurrentUser() {
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getUser();
+    return data.user;
+  } catch {
+    return null;
+  }
 }
 
 export async function requireCustomer() {

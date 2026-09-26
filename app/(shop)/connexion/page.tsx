@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/customer";
 import { LoginForm } from "@/components/compte/login-form";
 import { SplitTitle } from "@/components/motion/split-title";
 import { GsapReveal } from "@/components/motion/gsap-reveal";
@@ -11,6 +13,7 @@ export default async function ConnexionPage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const sp = await searchParams;
+  if (await getCurrentUser()) redirect("/compte");
   return (
     <div className="relative overflow-hidden bg-cream-deep">
       <div aria-hidden className="pointer-events-none absolute inset-0">
