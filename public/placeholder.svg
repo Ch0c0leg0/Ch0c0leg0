@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="750" viewBox="0 0 600 750">
+  <rect width="600" height="750" fill="#f5e8cf"/>
+  <rect x="24" y="24" width="552" height="702" fill="none" stroke="#221610" stroke-opacity="0.25" stroke-width="2"/>
+  <g fill="none" stroke="#221610" stroke-opacity="0.35" stroke-width="3">
+    <rect x="230" y="250" width="140" height="180" rx="4"/>
+    <circle cx="300" cy="320" r="28"/>
+    <path d="M230 390 L280 340 L330 380 L370 330 L370 430 L230 430 Z"/>
+  </g>
+  <text x="300" y="500" fill="#221610" fill-opacity="0.55" font-family="Georgia, serif" font-size="30" font-style="italic" text-anchor="middle">Photographie en cours</text>
+  <text x="300" y="540" fill="#221610" fill-opacity="0.4" font-family="Arial, sans-serif" font-size="16" letter-spacing="4" text-anchor="middle">CH0C0LEG0 — PLANCHE</text>
+</svg>

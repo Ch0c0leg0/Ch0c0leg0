@@ -1,0 +1,217 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fbf3e4;
+  --foreground: #221610;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* Base crémeuse */
+  --color-cream: #fbf3e4;
+  --color-cream-deep: #f5e8cf;
+  --color-sand: #eee0c0;
+
+  /* Encre chaude */
+  --color-espresso: #221610;
+  --color-cocoa: #4a3421;
+  --color-night: #1e130c;
+
+  /* Accents crémeux */
+  --color-apricot: #ffb25e;
+  --color-coral: #ff6b4a;
+  --color-honey: #e9a13b;
+  --color-pistachio: #a8c256;
+  --color-lilac: #c9b6f2;
+  --color-mint: #7fd1b9;
+
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-geist-mono);
+
+  --shadow-warm: 0 20px 45px -20px rgb(34 22 16 / 0.25);
+  --shadow-lift: 0 28px 60px -24px rgb(34 22 16 / 0.35);
+
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-marquee: marquee 28s linear infinite;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-pop: pop 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-12px);
+    }
+  }
+  @keyframes pop {
+    0% {
+      transform: scale(0.4);
+    }
+    60% {
+      transform: scale(1.25);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background: #ff6b4a;
+  color: #fbf3e4;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+
+.font-display {
+  font-family: var(--font-display), var(--font-sans), sans-serif;
+}
+
+/* Images : décodage async, pas de saccade au scroll */
+img {
+  content-visibility: auto;
+}
+
+/* Focus visible miel */
+:focus-visible {
+  outline: 2px solid #e9a13b;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-[80rem] px-4 sm:px-6 lg:px-10;
+  }
+
+  .kicker {
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em];
+  }
+
+  /* ---------- Boutons premium ---------- */
+  .btn-primary {
+    @apply relative inline-flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-full bg-espresso px-6 py-3 text-sm font-semibold text-cream transition-all duration-300 hover:-translate-y-0.5 hover:shadow-warm active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none;
+  }
+  .btn-primary::after {
+    content: "";
+    @apply pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700;
+  }
+  .btn-primary:hover::after {
+    @apply translate-x-full;
+  }
+  .btn-coral {
+    @apply relative inline-flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-full bg-coral px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-warm hover:brightness-105 active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0;
+  }
+  .btn-outline {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-espresso/20 bg-transparent px-6 py-3 text-sm font-semibold text-espresso transition-all duration-300 hover:-translate-y-0.5 hover:border-espresso hover:bg-espresso hover:text-cream active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0;
+  }
+  .btn-cream {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-cream px-6 py-3 text-sm font-semibold text-espresso transition-all duration-300 hover:-translate-y-0.5 hover:shadow-warm hover:bg-white active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0;
+  }
+  .btn-danger {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-red-600 px-5 py-2.5 text-sm font-medium text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-red-500 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-ghost {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium text-cocoa transition-colors hover:bg-espresso/5 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  /* ---------- Champs ---------- */
+  .input {
+    @apply w-full rounded-2xl border border-espresso/15 bg-white px-4 py-3 text-sm text-espresso shadow-[inset_0_2px_6px_rgb(34_22_16/0.04)] transition-all duration-300 placeholder:text-espresso/35 hover:border-espresso/30 focus:border-honey focus:outline-none focus:ring-4 focus:ring-honey/20;
+  }
+  .label {
+    @apply mb-1.5 block text-sm font-semibold text-cocoa;
+  }
+
+  /* ---------- Cartes ---------- */
+  .card {
+    @apply rounded-3xl border border-espresso/10 bg-white shadow-[0_10px_30px_-18px_rgb(34_22_16/0.3)];
+  }
+  .card-dark {
+    @apply rounded-3xl border border-white/10 bg-white/[0.04] shadow-[0_20px_50px_-20px_rgb(0_0_0/0.6)] backdrop-blur-sm;
+  }
+
+  /* ---------- Badges monochromes (seul le corail signale) ---------- */
+  .badge-green {
+    @apply inline-flex items-center gap-1 rounded-full bg-espresso/8 px-2.5 py-0.5 text-xs font-medium text-espresso;
+  }
+  .badge-amber {
+    @apply inline-flex items-center gap-1 rounded-full bg-honey/20 px-2.5 py-0.5 text-xs font-medium text-[#7a4d0c];
+  }
+  .badge-red {
+    @apply inline-flex items-center gap-1 rounded-full bg-coral/12 px-2.5 py-0.5 text-xs font-medium text-[#b23a20];
+  }
+  .badge-stone {
+    @apply inline-flex items-center gap-1 rounded-full bg-espresso/8 px-2.5 py-0.5 text-xs font-semibold text-cocoa;
+  }
+  .badge-coral {
+    @apply inline-flex items-center gap-1 rounded-full bg-coral px-2.5 py-1 text-xs font-bold text-white;
+  }
+
+  /* ---------- Sections ---------- */
+  .section-dark {
+    @apply bg-night text-cream;
+  }
+
+  /* Marquee : piste doublée, pause au hover */
+  .marquee-track {
+    @apply flex w-max items-center gap-8 pr-8;
+    animation: marquee 28s linear infinite;
+  }
+  .marquee-mask:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  /* Titre display fluide — Mirage fin, jamais gras */
+  .display-hero {
+    @apply font-display font-light leading-[1.02] tracking-tight;
+    font-size: clamp(2.75rem, 6vw, 5rem);
+  }
+  .display-section {
+    @apply font-display font-normal leading-[1.05] tracking-tight;
+    font-size: clamp(1.9rem, 3.5vw, 2.75rem);
+  }
+
+  /* Filet pointillé premium */
+  .divider-dots {
+    background-image: radial-gradient(rgb(34 22 16 / 0.25) 1px, transparent 1px);
+    background-size: 10px 10px;
+    height: 2px;
+  }
+}
