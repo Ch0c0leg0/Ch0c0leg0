@@ -5,7 +5,12 @@ import { GsapReveal } from "@/components/motion/gsap-reveal";
 
 export const metadata: Metadata = { title: "Connexion" };
 
-export default function ConnexionPage() {
+export default async function ConnexionPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const sp = await searchParams;
   return (
     <div className="relative overflow-hidden bg-cream-deep">
       <div aria-hidden className="pointer-events-none absolute inset-0">
@@ -23,6 +28,11 @@ export default function ConnexionPage() {
         <p className="mb-8 mt-3 text-center text-sm text-cocoa/70">
           Reconnecte-toi. Tes commandes t’attendent. Ton panier aussi.
         </p>
+        {sp.error === "callback" && (
+          <p className="mb-4 rounded-2xl border border-coral/30 bg-coral/10 px-4 py-3 text-sm font-medium text-[#b23a20]">
+            La connexion via Google a échoué. Réessaie.
+          </p>
+        )}
         <GsapReveal delay={0.1}>
           <LoginForm />
         </GsapReveal>

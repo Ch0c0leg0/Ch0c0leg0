@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserPlus, Mail, MailCheck, Lock, User, TriangleAlert } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { GoogleSignInButton } from "@/components/compte/google-sign-in-button";
 
 export function SignupForm() {
   const router = useRouter();
@@ -134,6 +135,10 @@ export function SignupForm() {
         <UserPlus className="h-4 w-4" />
         {status === "loading" ? "Création…" : "Créer mon compte"}
       </button>
+
+      <div className="divider-dots" aria-hidden />
+
+      <GoogleSignInButton />
 
       <div className="divider-dots" aria-hidden />
 

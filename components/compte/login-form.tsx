@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LogIn, Mail, Lock, TriangleAlert } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { GoogleSignInButton } from "@/components/compte/google-sign-in-button";
 import { mergeLocalIntoAccount } from "@/lib/favoris-store";
 
 export function LoginForm() {
@@ -86,6 +87,10 @@ export function LoginForm() {
         <LogIn className="h-4 w-4" />
         {status === "loading" ? "Connexion…" : "Se connecter"}
       </button>
+
+      <div className="divider-dots" aria-hidden />
+
+      <GoogleSignInButton />
 
       <div className="divider-dots" aria-hidden />
 
