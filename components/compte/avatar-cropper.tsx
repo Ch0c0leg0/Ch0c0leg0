@@ -60,7 +60,7 @@ export function AvatarCropper({
     <div>
       <input type="hidden" name="avatarCrop" value={formatAvatarCrop(value)} />
       <div className="flex items-start gap-4">
-        {/* Cercle résultat : cover + transform (identique au rendu carte) */}
+        {/* Cercle résultat : image entière + transform (identique au rendu carte) */}
         <div className="shrink-0">
           <div
             ref={circleRef}
@@ -68,7 +68,7 @@ export function AvatarCropper({
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
             onPointerCancel={onPointerUp}
-            className="h-28 w-28 cursor-grab touch-none overflow-hidden rounded-full bg-cream-deep ring-1 ring-espresso/10 active:cursor-grabbing"
+            className="h-36 w-36 cursor-grab touch-none overflow-hidden rounded-full bg-cream-deep ring-1 ring-espresso/10 active:cursor-grabbing"
             title={src && !broken ? "Glisse pour recadrer" : undefined}
           >
             {src && !broken ? (
@@ -80,7 +80,7 @@ export function AvatarCropper({
                 referrerPolicy="no-referrer"
                 onError={() => setBroken(true)}
                 onDragStart={(e) => e.preventDefault()}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-contain"
                 style={{ transform }}
               />
             ) : (

@@ -6,6 +6,7 @@ import { cn } from "@/lib/cn";
 /**
  * Avatar avec repli : si l'image ne charge pas (lien mort, anti-hotlink…),
  * affiche l'initiale au lieu de l'icône d'image cassée du navigateur.
+ * Rendu "contain" : l'image arrive entière, jamais pré-rognée.
  */
 export function AvatarImg({
   src,
@@ -40,7 +41,7 @@ export function AvatarImg({
       referrerPolicy="no-referrer"
       onError={() => setBroken(true)}
       style={imgStyle}
-      className={cn("bg-cream-deep object-cover", className)}
+      className={cn("bg-cream-deep object-contain", className)}
     />
   );
 }
