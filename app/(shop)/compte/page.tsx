@@ -1,10 +1,12 @@
-import { BadgePercent, CheckCircle2, Save, ShieldCheck, UserRound } from "lucide-react";
+import { BadgePercent, CheckCircle2, MapPin, Save, ShieldCheck } from "lucide-react";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { mapProfile } from "@/lib/supabase/mappers";
 import type { ProfileRow } from "@/lib/supabase/types";
 import { ensureProfile } from "@/lib/customer";
 import { getUserOrders } from "@/lib/orders";
+import { getMyReviews } from "@/lib/reviews";
 import { ReferralBox } from "@/components/compte/referral-box";
+import { ProfileCustomizer } from "@/components/compte/profile-customizer";
 import { AddressPicker } from "@/components/address/address-picker";
 import { updateProfileAction } from "./actions";
 
@@ -27,8 +29,18 @@ export default async function ComptePage({
     .maybeSingle();
   const profile = data ? mapProfile(data as unknown as ProfileRow) : null;
   const orders = await getUserOrders(user.id);
+  const myReviews = await getMyReviews(user.id).catch(() => []);
   // Photo Google (lecture seule, pas d'upload sur le plan Spark).
   const avatarUrl = String(user.user_metadata?.avatar_url ?? "");
+  const badges = {
+    emailVerified: Boolean(user.email_confirmed_at),
+    orderCount: orders.length,
+    reviewCount: myReviews.length,
+    memberSince: new Date(profile?.createdAt ?? Date.now()).toLocaleDateString("fr-FR", {
+      month: "long",
+      year: "numeric",
+    }),
+  };
 
   return (
     <div className="max-w-2xl space-y-6">
@@ -62,51 +74,15 @@ export default async function ComptePage({
 
       <ReferralBox />
 
+      <ProfileCustomizer profile={profile} googleAvatarUrl={avatarUrl} badges={badges} />
+
       <form action={updateProfileAction} className="card space-y-5 p-6 sm:p-8">
         <h2 className="font-display flex items-center gap-2 text-lg font-normal text-espresso">
           <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-cream-deep text-espresso">
-            <UserRound className="h-4 w-4" />
+            <MapPin className="h-4 w-4" />
           </span>
-          Personnalisation
+          Adresse de livraison
         </h2>
-        <div className="flex items-center gap-4 rounded-2xl bg-cream/60 px-4 py-3 ring-1 ring-espresso/10">
-          {avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={avatarUrl}
-              alt=""
-              referrerPolicy="no-referrer"
-              className="h-14 w-14 shrink-0 rounded-full bg-cream-deep object-cover ring-1 ring-espresso/10"
-            />
-          ) : (
-            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-cream-deep font-display text-2xl text-espresso">
-              {(profile?.displayName ?? user.email ?? "?").charAt(0).toUpperCase()}
-            </span>
-          )}
-          <div className="min-w-0">
-            <p className="truncate font-bold text-espresso">
-              {profile?.displayName || "Ton pseudo"}
-            </p>
-            <p className="truncate text-xs text-cocoa/60">{user.email}</p>
-            {avatarUrl && (
-              <p className="mt-0.5 text-[11px] text-cocoa/50">
-                Photo importée de Google
-              </p>
-            )}
-          </div>
-        </div>
-        <div>
-          <label className="label" htmlFor="displayName">
-            Identifiant (pseudo) *
-          </label>
-          <input
-            id="displayName"
-            name="displayName"
-            required
-            defaultValue={profile?.displayName ?? ""}
-            className="input"
-          />
-        </div>
         <div>
           <label className="label" htmlFor="line1">
             Adresse

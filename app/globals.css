@@ -215,3 +215,65 @@ img {
     height: 2px;
   }
 }
+
+/* ---------- Effets de carte profil (CSS pur) ---------- */
+.pfx-shine {
+  position: relative;
+  overflow: hidden;
+}
+.pfx-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 40%, rgb(255 255 255 / 0.35) 50%, transparent 60%);
+  transform: translateX(-120%);
+  animation: pfx-sweep 3.2s ease-in-out infinite;
+}
+.pfx-float {
+  animation: pfx-bob 5s ease-in-out infinite;
+}
+.pfx-glow {
+  animation: pfx-glow 2.6s ease-in-out infinite;
+}
+.pfx-sparkles {
+  position: relative;
+}
+.pfx-sparkles::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(2px 2px at 12% 22%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 78% 12%, #fff, transparent),
+    radial-gradient(2px 2px at 64% 78%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 28% 68%, #fff, transparent),
+    radial-gradient(2px 2px at 88% 55%, #fff, transparent);
+  animation: pfx-twinkle 2.2s ease-in-out infinite alternate;
+}
+@keyframes pfx-sweep {
+  0% { transform: translateX(-120%); }
+  55%, 100% { transform: translateX(120%); }
+}
+@keyframes pfx-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+@keyframes pfx-glow {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50% { box-shadow: 0 0 34px -6px var(--pf-accent, #ff6b4a); }
+}
+@keyframes pfx-twinkle {
+  from { opacity: 0.25; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pfx-shine::after,
+  .pfx-float,
+  .pfx-glow,
+  .pfx-sparkles::before {
+    animation: none !important;
+  }
+}

@@ -1,11 +1,13 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resolvePublicImageUrl } from "@/lib/images-server";
-import { mapCategory, mapProduct } from "@/lib/supabase/mappers";
+import { mapCategory, mapProduct, mapProfile } from "@/lib/supabase/mappers";
 import type {
   Category,
   CategoryRow,
   Product,
   ProductRow,
+  Profile,
+  ProfileRow,
 } from "@/lib/supabase/types";
 
 /* Couche de lecture catalogue — Supabase (serveur).
@@ -319,4 +321,46 @@ export async function getProductWithCategoryById(
     if (data) category = mapCategory(data as unknown as CategoryRow);
   }
   return { ...product, category };
+}
+
+/* ---------- Profil public (jamais d'e-mail ni d'adresse) ---------- */
+
+export type PublicProfile = {
+  profile: Profile;
+  orderCount: number;
+  reviewCount: number;
+  memberSince: string;
+};
+
+/** Profil affichable par tous : sous-ensemble strict, sans infos persos. */
+export async function getPublicProfile(userId: string): Promise<PublicProfile | null> {
+  if (!userId || userId.length > 64) return null;
+  try {
+    const { data, error } = await db()
+      .from("profiles")
+      .select(
+        "id,display_name,bio,pronouns,status_text,avatar_url,avatar_decoration,profile_frame,banner,accent_color,name_style,nameplate,profile_effect,created_at"
+      )
+      .eq("id", userId)
+      .maybeSingle();
+    if (error || !data) return null;
+    const { getUserOrders } = await import("@/lib/orders");
+    const { getMyReviews } = await import("@/lib/reviews");
+    const [orders, reviews] = await Promise.all([
+      getUserOrders(userId).catch(() => []),
+      getMyReviews(userId).catch(() => []),
+    ]);
+    const profile = mapProfile(data as unknown as ProfileRow);
+    return {
+      profile,
+      orderCount: orders.length,
+      reviewCount: reviews.length,
+      memberSince: new Date(profile.createdAt ?? Date.now()).toLocaleDateString("fr-FR", {
+        month: "long",
+        year: "numeric",
+      }),
+    };
+  } catch {
+    return null;
+  }
 }

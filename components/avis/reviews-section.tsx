@@ -155,7 +155,12 @@ function ReviewCard({ review }: { review: Review }) {
         </span>
         <div className="min-w-0 flex-1">
           <p className="flex flex-wrap items-center gap-2 text-sm">
-            <span className="font-bold text-espresso">{review.displayName}</span>
+            <Link
+              href={`/profil/${review.userId}`}
+              className="font-bold text-espresso underline decoration-coral/40 underline-offset-4 transition-colors hover:decoration-coral"
+            >
+              {review.displayName}
+            </Link>
             {review.verified && (
               <span className="inline-flex items-center gap-1 rounded-full bg-espresso/8 px-2 py-0.5 text-[11px] font-medium text-espresso">
                 <BadgeCheck className="h-3 w-3" /> Achat vérifié
